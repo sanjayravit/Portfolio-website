@@ -1,48 +1,20 @@
-import nodemailer from "nodemailer";
-import dns from "dns";
+import { Resend } from 'resend';
 
-// Force Node.js 18+ to prefer IPv4 for DNS resolution instead of IPv6
-// This fixes the ENETUNREACH error on Render environments for smtp.gmail.com
-dns.setDefaultResultOrder("ipv4first");
-
-let transporter = null;
-
-const getTransporter = () => {
-  if (!transporter) {
-    transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      },
-      tls: {
-        rejectUnauthorized: false,
-        ciphers: 'SSLv3'
-      },
-      connectionTimeout: 10000, // 10 seconds
-      greetingTimeout: 10000,
-      socketTimeout: 10000
-    });
-  }
-  return transporter;
-};
+// Initialize Resend with the API key from environment variables
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const sendNotificationEmail = async (name, email, message) => {
   // Skip email if credentials not set
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.warn("Email service not configured. Skipping email notification.");
+  if (!process.env.RESEND_API_KEY) {
+    console.warn("RESEND_API_KEY not configured. Skipping email notification.");
     return;
   }
 
   try {
-    const transporter = getTransporter();
-    const result = await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: process.env.ADMIN_EMAIL,
-      subject: "📩 New Website Message",
-
+    const data = await resend.emails.send({
+      from: 'Acme <onboarding@resend.dev>', // Resend testing email wrapper
+      to: process.env.ADMIN_EMAIL, // Your receiving email address
+      subject: `📩 New Website Message from ${name}`,
       html: `
         <h2>New Contact Message</h2>
         <p><b>Name:</b> ${name}</p>
@@ -50,10 +22,13 @@ export const sendNotificationEmail = async (name, email, message) => {
         <p><b>Message:</b> ${message}</p>
       `
     });
-    console.log("✅ Email sent successfully:", result.messageId);
-  } catch (err) {
-    console.error("❌ Email send error:", err.message);
-    // Don't fail the request if email fails
-  }
 
-};  
+    if (data.error) {
+      console.error("❌ Resend email error:", data.error);
+    } else {
+      console.log("✅ Email sent successfully via Resend:", data.data.id);
+    }
+  } catch (err) {
+    console.error("❌ Email send catch error:", err.message);
+  }
+};
