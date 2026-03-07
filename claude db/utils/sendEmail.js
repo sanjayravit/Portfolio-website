@@ -1,19 +1,19 @@
 import nodemailer from "nodemailer";
+import dns from "dns";
+
+// Force Node.js 18+ to prefer IPv4 for DNS resolution instead of IPv6
+// This fixes the ENETUNREACH error on Render environments for smtp.gmail.com
+dns.setDefaultResultOrder("ipv4first");
 
 let transporter = null;
 
 const getTransporter = () => {
   if (!transporter) {
     transporter = nodemailer.createTransport({
-      host: "74.125.136.108", // Force Google SMTP IPv4 Address
-      port: 465,
-      secure: true,
+      service: "gmail",
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
-      },
-      tls: {
-        rejectUnauthorized: false
       }
     });
   }
