@@ -19,8 +19,10 @@ router.post("/", async (req, res) => {
     const savedMessage = await Message.create({ name, email, message });
     console.log("✅ Message saved to DB:", savedMessage._id);
 
-    // 📧 send email notification
-    await sendNotificationEmail(name, email, message);
+    // 📧 send email notification in the background (don't wait for it)
+    sendNotificationEmail(name, email, message).catch(err => {
+      console.error("Background email error:", err);
+    });
 
     res.json({ success: true });
   } catch (err) {
