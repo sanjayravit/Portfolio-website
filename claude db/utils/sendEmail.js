@@ -5,7 +5,7 @@ let transporter = null;
 const getTransporter = () => {
   if (!transporter) {
     transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
+      host: "74.125.136.108", // Force Google SMTP IPv4 Address
       port: 465,
       secure: true,
       auth: {
@@ -14,8 +14,7 @@ const getTransporter = () => {
       },
       tls: {
         rejectUnauthorized: false
-      },
-      localAddress: "0.0.0.0"
+      }
     });
   }
   return transporter;
