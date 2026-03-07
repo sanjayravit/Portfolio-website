@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign Up</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="card-header">
+        <h1>Create Account</h1>
+        <p>Join us today — it's free</p>
+      </div>
+
+      <form id="signupForm">
+        <div class="field">
+          <label for="name">Name</label>
+          <input type="text" id="name" placeholder="Jane Doe" required />
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="jane@example.com" required />
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Min. 8 characters" required />
+        </div>
+
+        <button type="submit" id="submitBtn">
+          <span class="btn-text">Sign Up</span>
+          <span class="btn-loader" hidden>...</span>
+        </button>
+
+        <p id="message" class="message" hidden></p>
+      </form>
+
+      <p class="footer-text">Already have an account? <a href="#">Log in</a></p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
