@@ -41,7 +41,7 @@ If they ask for his GitHub or LinkedIn, point them to the links in the contact s
         res.json({ reply: response.text });
     } catch (error) {
         console.error("Gemini API Error:", error);
-        res.status(500).json({ error: "Failed to process chat message" });
+        res.status(500).json({ error: "Failed to process chat message", details: error.message || error.toString() });
     }
 });
 
