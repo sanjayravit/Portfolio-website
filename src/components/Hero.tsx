@@ -43,37 +43,42 @@ const Hero = () => {
         ease: "power3.out"
       }, "-=1");
 
-    gsap.to(orbRef1.current, {
-      y: -20,
-      x: 10,
-      duration: 4,
-      repeat: -1,
-      yoyo: true,
-      ease: "power1.inOut"
-    });
+    const mm = gsap.matchMedia();
 
-    gsap.to(orbRef2.current, {
-      y: -30,
-      x: -15,
-      duration: 5,
-      repeat: -1,
-      yoyo: true,
-      ease: "power1.inOut",
-      delay: 1
-    });
+    mm.add("(min-width: 768px)", () => {
+      gsap.to(orbRef1.current, {
+        y: -20,
+        x: 10,
+        duration: 4,
+        repeat: -1,
+        yoyo: true,
+        ease: "power1.inOut"
+      });
 
-    gsap.to(orbRef3.current, {
-      y: -25,
-      x: 20,
-      duration: 6,
-      repeat: -1,
-      yoyo: true,
-      ease: "power1.inOut",
-      delay: 2
+      gsap.to(orbRef2.current, {
+        y: -30,
+        x: -15,
+        duration: 5,
+        repeat: -1,
+        yoyo: true,
+        ease: "power1.inOut",
+        delay: 1
+      });
+
+      gsap.to(orbRef3.current, {
+        y: -25,
+        x: 20,
+        duration: 6,
+        repeat: -1,
+        yoyo: true,
+        ease: "power1.inOut",
+        delay: 2
+      });
     });
 
     return () => {
       tl.kill();
+      mm.revert();
     };
   }, []);
 
@@ -102,14 +107,14 @@ const Hero = () => {
 
   return (
     <section id="hero" ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <div ref={splineRef} className="absolute inset-0 w-full h-full opacity-70 overflow-hidden">
+      <div ref={splineRef} className="absolute inset-0 w-full h-full opacity-70 overflow-hidden hidden md:block">
         <iframe src="https://my.spline.design/genkubgreetingrobot-MW4W3iAFsJj5olFfT1MhN0TH/" frameBorder="0" width="100%" height="100%" className="w-full h-full" style={{ pointerEvents: 'none' }} />
         <div className="absolute bottom-0 right-0 w-40 h-16 bg-gradient-to-tl from-background via-background to-transparent pointer-events-none z-10" />
       </div>
 
-      <div ref={orbRef1} className="absolute top-1/4 left-1/4 w-32 h-32 bg-primary/20 rounded-full blur-xl animate-pulse" />
-      <div ref={orbRef2} className="absolute top-1/3 right-1/3 w-24 h-24 bg-secondary/20 rounded-full blur-xl animate-pulse" style={{ animationDelay: '1s' }} />
-      <div ref={orbRef3} className="absolute bottom-1/4 left-1/3 w-40 h-40 bg-accent/20 rounded-full blur-xl animate-pulse" style={{ animationDelay: '2s' }} />
+      <div ref={orbRef1} className="absolute top-1/4 left-1/4 w-32 h-32 bg-primary/20 rounded-full blur-xl md:animate-pulse opacity-50 md:opacity-100" />
+      <div ref={orbRef2} className="absolute top-1/3 right-1/3 w-24 h-24 bg-secondary/20 rounded-full blur-xl md:animate-pulse opacity-50 md:opacity-100" style={{ animationDelay: '1s' }} />
+      <div ref={orbRef3} className="absolute bottom-1/4 left-1/3 w-40 h-40 bg-accent/20 rounded-full blur-xl md:animate-pulse opacity-50 md:opacity-100" style={{ animationDelay: '2s' }} />
 
       <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
         <h1 ref={titleRef} className="text-4xl md:text-6xl lg:text-7xl font-light text-foreground mb-6 leading-tight">
@@ -139,7 +144,7 @@ const Hero = () => {
 
           <Button onClick={scrollToProjects} variant="ghost" className="group inline-flex items-center gap-3 px-8 py-4 text-foreground hover:bg-primary/10 rounded-lg font-medium transition-all duration-300 hover:scale-105" size="lg">
             View My Work
-            <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform duration-300"/>
+            <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform duration-300" />
           </Button>
         </div>
       </div>
