@@ -48,7 +48,7 @@ const Chatbot: React.FC = () => {
     }
   };
 
-  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const API_BASE = import.meta.env.VITE_API_URL || 'https://portfolio-website-56ix.onrender.com';
 
   const handleSendMessage = async () => {
     if (!message.trim() || isLoading) return;
