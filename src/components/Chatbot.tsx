@@ -5,10 +5,11 @@ import { ChatCircle, X, PaperPlaneTilt, Robot } from 'phosphor-react';
 const Chatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState([
     {
       id: 1,
-      text: "Hi! I'm AI assistant. How can I help you today?",
+      text: "Hi! I'm an AI assistant. How can I help you today?",
       isBot: true,
       timestamp: new Date()
     }
@@ -47,44 +48,58 @@ const Chatbot: React.FC = () => {
     }
   };
 
-  const handleSendMessage = () => {
-    if (!message.trim()) return;
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
+  const handleSendMessage = async () => {
+    if (!message.trim() || isLoading) return;
+
+    const userMessageText = message;
     const newUserMessage = {
       id: messages.length + 1,
-      text: message,
+      text: userMessageText,
       isBot: false,
       timestamp: new Date()
     };
 
     setMessages(prev => [...prev, newUserMessage]);
     setMessage('');
+    setIsLoading(true);
 
-    setTimeout(() => {
-      const userInput = message.toLowerCase();
+    try {
+      const res = await fetch(`${API_BASE}/api/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: userMessageText, history: messages }),
+      });
 
-      let reply = "Sorry, I didn't understand that. Can you rephrase it?";
-
-      if (userInput.includes("services")) {
-        reply = "Sanjay Ravi offers services in frontend, backend development, animations, and AI integration. Would you like a portfolio link?";
-      } else if (userInput.includes("contact")) {
-        reply = "You can contact Sanjay Ravi via the contact form above or email him directly at sanjayravit7@gmail.com";
-      } else if (userInput.includes("react") || userInput.includes("gsap")) {
-        reply = "Yes! Sanjay Ravi uses React, GSAP, and even WebGL to build stunning UIs.";
-      } else if (userInput.includes("project")) {
-        reply = "Tell me more about your project! Sanjay Ravi can help with frontend, backend, UI/UX design, and building full-stack web applications.";
+      if (!res.ok) {
+        throw new Error('Network response was not ok');
       }
+
+      const data = await res.json();
 
       const botResponse = {
         id: messages.length + 2,
-        text: reply,
+        text: data.reply || "Sorry, I couldn't generate a response.",
         isBot: true,
         timestamp: new Date()
       };
 
       setMessages(prev => [...prev, botResponse]);
-    }, 1000);
-
+    } catch (error) {
+      console.error("Chatbot API Error:", error);
+      const errorResponse = {
+        id: messages.length + 2,
+        text: "Sorry, I am having trouble connecting to the server. Please check your connection or try again later.",
+        isBot: true,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorResponse]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -127,12 +142,21 @@ const Chatbot: React.FC = () => {
                 </div>
               </div>
             ))}
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="max-w-xs px-3 py-2 rounded-lg text-sm bg-muted/20 text-foreground flex items-center space-x-1">
+                  <div className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce"></div>
+                  <div className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="p-4 border-t border-glass-border">
             <div className="flex space-x-2">
-              <input type="text" value={message} onChange={(e) => setMessage(e.target.value)} onKeyPress={handleKeyPress} placeholder="Type a message..." className="flex-1 px-3 py-2 bg-glass border border-glass-border rounded-lg text-sm focus:outline-none focus:border-primary" />
-              <button onClick={handleSendMessage} className="p-2 w-8 h-8 bg-gradient-primary rounded-lg hover:scale-105 transition-transform">
+              <input type="text" value={message} onChange={(e) => setMessage(e.target.value)} onKeyPress={handleKeyPress} placeholder="Type a message..." disabled={isLoading} className="flex-1 px-3 py-2 bg-glass border border-glass-border rounded-lg text-sm focus:outline-none focus:border-primary disabled:opacity-50" />
+              <button onClick={handleSendMessage} disabled={isLoading} className="p-2 w-8 h-8 bg-gradient-primary rounded-lg hover:scale-105 transition-transform disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center">
                 <PaperPlaneTilt size={16} />
               </button>
             </div>

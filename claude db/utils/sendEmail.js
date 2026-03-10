@@ -1,7 +1,8 @@
 import { Resend } from 'resend';
 
 // Initialize Resend with the API key from environment variables
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Instantiate dynamically to prevent crash if key is missing
+let resend;
 
 export const sendNotificationEmail = async (name, email, message) => {
   // Skip email if credentials not set
@@ -11,10 +12,13 @@ export const sendNotificationEmail = async (name, email, message) => {
   }
 
   try {
+    if (!resend) {
+      resend = new Resend(process.env.RESEND_API_KEY);
+    }
     const data = await resend.emails.send({
       from: 'Acme <onboarding@resend.dev>', // Resend testing email wrapper
       to: process.env.ADMIN_EMAIL, // Your receiving email address
-      subject: `📩 New Website Message from ${name}`,
+      subject: `📩 New Portfolio Website Message from ${name}`,
       html: `
         <h2>New Contact Message</h2>
         <p><b>Name:</b> ${name}</p>

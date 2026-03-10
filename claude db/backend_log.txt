@@ -1,0 +1,27 @@
+
+> portfolio-signup-backend@1.0.0 start
+> node server.js
+
+≡ƒÜÇ Server running on http://localhost:5000
+ΓÜá∩╕Å Running without MongoDB fully connected...
+Γ¥î MongoDB connection error: querySrv ECONNREFUSED _mongodb._tcp.cluster0.xxxxx.mongodb.net
+-> Processing chat request
+-> Request message: test
+-> Calling Gemini API...
+-> Gemini API response received: Yes
+-> Processing chat request
+-> Request message: hi
+-> Calling Gemini API...
+-> Gemini API response received: Yes
+-> Processing chat request
+-> Request message: what is thi website
+-> Calling Gemini API...
+-> Gemini API response received: Yes
+-> Processing chat request
+-> Request message: ok
+-> Calling Gemini API...
+-> Gemini API response received: Yes
+-> Processing chat request
+-> Request message: open home
+-> Calling Gemini API...
+-> Gemini API response received: Yes

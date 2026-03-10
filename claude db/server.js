@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import authRoutes from "./routes/auth.js";
 import contactRoutes from "./routes/contact.js";
+import chatRoutes from "./routes/chat.js";
 
 dotenv.config();
 
@@ -17,18 +18,21 @@ app.use(express.json());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/chat", chatRoutes);
 
 // Health check
 app.get("/", (req, res) => res.json({ status: "Server is running" }));
 
-// Connect to MongoDB, then start server
+// Start server immediately
+app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+
+// Connect to MongoDB in background
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 5000 })
   .then(() => {
     console.log("✅ MongoDB connected");
-    app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
   })
   .catch((err) => {
     console.error("❌ MongoDB connection error:", err.message);
-    process.exit(1);
+    console.log("⚠️ Running without MongoDB fully connected...");
   });
