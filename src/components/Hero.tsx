@@ -107,14 +107,14 @@ const Hero = () => {
 
   return (
     <section id="hero" ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <div ref={splineRef} className="absolute inset-0 w-full h-full opacity-70 overflow-hidden hidden md:block">
-        <iframe src="https://my.spline.design/genkubgreetingrobot-MW4W3iAFsJj5olFfT1MhN0TH/" frameBorder="0" width="100%" height="100%" className="w-full h-full" style={{ pointerEvents: 'none' }} />
+      <div ref={splineRef} className="absolute inset-0 w-full h-full opacity-70 overflow-hidden" style={{ pointerEvents: 'none', willChange: 'opacity, transform' }}>
+        <iframe src="https://my.spline.design/genkubgreetingrobot-MW4W3iAFsJj5olFfT1MhN0TH/" frameBorder="0" width="100%" height="100%" className="w-full h-full" style={{ pointerEvents: 'none' }} title="Hero Robot" loading="lazy" />
         <div className="absolute bottom-0 right-0 w-40 h-16 bg-gradient-to-tl from-background via-background to-transparent pointer-events-none z-10" />
       </div>
 
-      <div ref={orbRef1} className="absolute top-1/4 left-1/4 w-32 h-32 bg-primary/20 rounded-full blur-xl md:animate-pulse opacity-50 md:opacity-100" />
-      <div ref={orbRef2} className="absolute top-1/3 right-1/3 w-24 h-24 bg-secondary/20 rounded-full blur-xl md:animate-pulse opacity-50 md:opacity-100" style={{ animationDelay: '1s' }} />
-      <div ref={orbRef3} className="absolute bottom-1/4 left-1/3 w-40 h-40 bg-accent/20 rounded-full blur-xl md:animate-pulse opacity-50 md:opacity-100" style={{ animationDelay: '2s' }} />
+      <div ref={orbRef1} className="absolute top-1/4 left-1/4 w-32 h-32 bg-primary/20 rounded-full blur-xl md:animate-pulse opacity-50 md:opacity-100" style={{ pointerEvents: 'none', willChange: 'transform' }} />
+      <div ref={orbRef2} className="absolute top-1/3 right-1/3 w-24 h-24 bg-secondary/20 rounded-full blur-xl md:animate-pulse opacity-50 md:opacity-100" style={{ animationDelay: '1s', pointerEvents: 'none', willChange: 'transform' }} />
+      <div ref={orbRef3} className="absolute bottom-1/4 left-1/3 w-40 h-40 bg-accent/20 rounded-full blur-xl md:animate-pulse opacity-50 md:opacity-100" style={{ animationDelay: '2s', pointerEvents: 'none', willChange: 'transform' }} />
 
       <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
         <h1 ref={titleRef} className="text-4xl md:text-6xl lg:text-7xl font-light text-foreground mb-6 leading-tight">
