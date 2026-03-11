@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ArrowRight, DownloadSimple, Handshake } from 'phosphor-react';
+import Spline from '@splinetool/react-spline';
+import ErrorBoundary from './ErrorBoundary';
 import { Button } from './ui/button';
 
 const Hero = () => {
@@ -108,7 +110,25 @@ const Hero = () => {
   return (
     <section id="hero" ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <div ref={splineRef} className="absolute inset-0 w-full h-full opacity-70 overflow-hidden" style={{ pointerEvents: 'none', willChange: 'opacity, transform' }}>
-        <iframe src="https://my.spline.design/genkubgreetingrobot-MW4W3iAFsJj5olFfT1MhN0TH/" frameBorder="0" width="100%" height="100%" className="w-full h-full" style={{ pointerEvents: 'none' }} title="Hero Robot" loading="lazy" />
+        <ErrorBoundary fallback={<div className="w-full h-full opacity-50 bg-gradient-to-b from-primary/10 to-background/20" />}>
+          <Spline
+            scene="/scene.splinecode"
+            className="w-full h-full"
+            onLoad={(spline) => {
+              try {
+                const isMobile = window.innerWidth < 768;
+                const ratio = isMobile ? 1 : Math.min(window.devicePixelRatio, 2);
+                if (typeof (spline as any).setPixelRatio === 'function') {
+                  (spline as any).setPixelRatio(ratio);
+                } else if ((spline as any)._renderer && typeof (spline as any)._renderer.setPixelRatio === 'function') {
+                  (spline as any)._renderer.setPixelRatio(ratio);
+                }
+              } catch (err) {
+                console.error('Error setting pixel ratio for Spline:', err);
+              }
+            }}
+          />
+        </ErrorBoundary>
         <div className="absolute bottom-0 right-0 w-40 h-16 bg-gradient-to-tl from-background via-background to-transparent pointer-events-none z-10" />
       </div>
 
