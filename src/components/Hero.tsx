@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ArrowRight, DownloadSimple, Handshake } from 'phosphor-react';
 import Spline from '@splinetool/react-spline';
@@ -14,6 +14,8 @@ const Hero = () => {
   const orbRef1 = useRef<HTMLDivElement>(null);
   const orbRef2 = useRef<HTMLDivElement>(null);
   const orbRef3 = useRef<HTMLDivElement>(null);
+
+  const [shouldLoadRobot, setShouldLoadRobot] = useState(false);
 
   useEffect(() => {
     const tl = gsap.timeline({ delay: 4 });
@@ -78,9 +80,14 @@ const Hero = () => {
       });
     });
 
+    const timer = setTimeout(() => {
+      setShouldLoadRobot(true);
+    }, 1000);
+
     return () => {
       tl.kill();
       mm.revert();
+      clearTimeout(timer);
     };
   }, []);
 
@@ -111,23 +118,25 @@ const Hero = () => {
     <section id="hero" ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <div ref={splineRef} className="absolute inset-0 w-full h-full opacity-70 overflow-hidden" style={{ pointerEvents: 'none', willChange: 'opacity, transform' }}>
         <ErrorBoundary fallback={<div className="w-full h-full opacity-50 bg-gradient-to-b from-primary/10 to-background/20" />}>
-          <Spline
-            scene="/scene.splinecode"
-            className="w-full h-full"
-            onLoad={(spline) => {
-              try {
-                const isMobile = window.innerWidth < 768;
-                const ratio = isMobile ? 1 : Math.min(window.devicePixelRatio, 2);
-                if (typeof (spline as any).setPixelRatio === 'function') {
-                  (spline as any).setPixelRatio(ratio);
-                } else if ((spline as any)._renderer && typeof (spline as any)._renderer.setPixelRatio === 'function') {
-                  (spline as any)._renderer.setPixelRatio(ratio);
+          {shouldLoadRobot && (
+            <Spline
+              scene="/scene.splinecode"
+              className="w-full h-full animate-in fade-in duration-1000"
+              onLoad={(spline) => {
+                try {
+                  const isMobile = window.innerWidth < 768;
+                  const ratio = isMobile ? 1 : Math.min(window.devicePixelRatio, 2);
+                  if (typeof (spline as any).setPixelRatio === 'function') {
+                    (spline as any).setPixelRatio(ratio);
+                  } else if ((spline as any)._renderer && typeof (spline as any)._renderer.setPixelRatio === 'function') {
+                    (spline as any)._renderer.setPixelRatio(ratio);
+                  }
+                } catch (err) {
+                  console.error('Error setting pixel ratio for Spline:', err);
                 }
-              } catch (err) {
-                console.error('Error setting pixel ratio for Spline:', err);
-              }
-            }}
-          />
+              }}
+            />
+          )}
         </ErrorBoundary>
         <div className="absolute bottom-0 right-0 w-40 h-16 bg-gradient-to-tl from-background via-background to-transparent pointer-events-none z-10" />
       </div>
