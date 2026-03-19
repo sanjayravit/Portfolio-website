@@ -18,6 +18,7 @@ const Hero = () => {
   const [shouldLoadRobot, setShouldLoadRobot] = useState(false);
   const [isInView, setIsInView] = useState(true);
   const [isLowEndDevice, setIsLowEndDevice] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     // Check for low-end device
@@ -146,12 +147,16 @@ const Hero = () => {
                 {/* Premium static fallback */}
                 <img src="/robot-fallback.webp" alt="3D Robot" className="animate-pulse float object-contain max-w-sm opacity-80" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
               </div>
-            ) : isInView ? (
-              <div className="spline-wrapper w-full h-full">
+            ) : (
+              <div
+                className="spline-wrapper w-full h-full"
+                style={{ visibility: (!isLoaded || isInView) ? 'visible' : 'hidden' }}
+              >
                 <Spline
                   scene="/scene.splinecode"
                   className="w-full h-full animate-in fade-in duration-1000"
                   onLoad={(spline) => {
+                    setIsLoaded(true);
                     try {
                       const isMobile = window.matchMedia("(max-width: 768px)").matches;
                       const ratio = isMobile ? 1 : Math.min(window.devicePixelRatio, 1.5);
@@ -166,7 +171,7 @@ const Hero = () => {
                   }}
                 />
               </div>
-            ) : null
+            )
           )}
         </ErrorBoundary>
         <div className="absolute bottom-0 right-0 w-40 h-16 bg-gradient-to-tl from-background via-background to-transparent pointer-events-none z-10" />
