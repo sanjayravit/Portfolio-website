@@ -16,8 +16,29 @@ const Hero = () => {
   const orbRef3 = useRef<HTMLDivElement>(null);
 
   const [shouldLoadRobot, setShouldLoadRobot] = useState(false);
+  const [isInView, setIsInView] = useState(true);
+  const [isLowEndDevice, setIsLowEndDevice] = useState(false);
 
   useEffect(() => {
+    // Check for low-end device
+    const checkLowEnd = () => {
+      const isMobile = window.matchMedia("(max-width: 480px)").matches;
+      const lowConcurrency = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
+      if (isMobile || lowConcurrency) {
+        setIsLowEndDevice(true);
+      }
+    };
+    checkLowEnd();
+
+    // Intersection Observer to pause rendering when off-screen
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { threshold: 0.01 }
+    );
+    if (heroRef.current) observer.observe(heroRef.current);
+
     const tl = gsap.timeline({ delay: 4 });
 
     tl.from(titleRef.current, {
@@ -85,6 +106,7 @@ const Hero = () => {
     }, 1000);
 
     return () => {
+      observer.disconnect();
       tl.kill();
       mm.revert();
       clearTimeout(timer);
@@ -119,23 +141,32 @@ const Hero = () => {
       <div ref={splineRef} className="absolute inset-0 w-full h-full opacity-70 overflow-hidden" style={{ pointerEvents: 'none', willChange: 'opacity, transform' }}>
         <ErrorBoundary fallback={<div className="w-full h-full opacity-50 bg-gradient-to-b from-primary/10 to-background/20" />}>
           {shouldLoadRobot && (
-            <Spline
-              scene="/scene.splinecode"
-              className="w-full h-full animate-in fade-in duration-1000"
-              onLoad={(spline) => {
-                try {
-                  const isMobile = window.innerWidth < 768;
-                  const ratio = isMobile ? 1 : Math.min(window.devicePixelRatio, 2);
-                  if (typeof (spline as any).setPixelRatio === 'function') {
-                    (spline as any).setPixelRatio(ratio);
-                  } else if ((spline as any)._renderer && typeof (spline as any)._renderer.setPixelRatio === 'function') {
-                    (spline as any)._renderer.setPixelRatio(ratio);
-                  }
-                } catch (err) {
-                  console.error('Error setting pixel ratio for Spline:', err);
-                }
-              }}
-            />
+            isLowEndDevice ? (
+              <div className="w-full h-full flex items-center justify-center">
+                {/* Premium static fallback */}
+                <img src="/robot-fallback.webp" alt="3D Robot" className="animate-pulse float object-contain max-w-sm opacity-80" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+              </div>
+            ) : isInView ? (
+              <div className="spline-wrapper w-full h-full">
+                <Spline
+                  scene="/scene.splinecode"
+                  className="w-full h-full animate-in fade-in duration-1000"
+                  onLoad={(spline) => {
+                    try {
+                      const isMobile = window.matchMedia("(max-width: 768px)").matches;
+                      const ratio = isMobile ? 1 : Math.min(window.devicePixelRatio, 1.5);
+                      if (typeof (spline as any).setPixelRatio === 'function') {
+                        (spline as any).setPixelRatio(ratio);
+                      } else if ((spline as any)._renderer && typeof (spline as any)._renderer.setPixelRatio === 'function') {
+                        (spline as any)._renderer.setPixelRatio(ratio);
+                      }
+                    } catch (err) {
+                      console.error('Error setting pixel ratio for Spline:', err);
+                    }
+                  }}
+                />
+              </div>
+            ) : null
           )}
         </ErrorBoundary>
         <div className="absolute bottom-0 right-0 w-40 h-16 bg-gradient-to-tl from-background via-background to-transparent pointer-events-none z-10" />

@@ -66,6 +66,11 @@
     @apply bg-background text-foreground antialiased;
     background: var(--gradient-background);
     overflow-x: hidden;
+    overscroll-behavior-y: none;
+  }
+
+  .spline-wrapper canvas {
+    touch-action: none;
   }
 
   .glass {
