@@ -23,9 +23,10 @@ const Hero = () => {
   useEffect(() => {
     // Check for low-end device
     const checkLowEnd = () => {
-      const isMobile = window.matchMedia("(max-width: 480px)").matches;
-      const lowConcurrency = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
-      if (isMobile || lowConcurrency) {
+      // Only fallback on devices with very low hardware concurrency (under 4 cores)
+      // Most modern mobiles can handle the Spline scene fine.
+      const lowConcurrency = navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4;
+      if (lowConcurrency) {
         setIsLowEndDevice(true);
       }
     };
